@@ -30,6 +30,18 @@ router.post("/register", async (req, res, next) => {
   try {
     const newUser = new UserModel(req.body);
     const { _id } = await newUser.save();
+
+    const { accessToken, refreshToken } = await authenticateUser(newUser);
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      path: "/",
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      path: "/users/refreshToken",
+    });
     res.status(201).send(_id);
   } catch (error) {
     console.log(error);
@@ -63,6 +75,7 @@ router.delete("/me", authorizeUser, async (req, res, next) => {
 
 router.post("/addToFav", authorizeUser, async (req, res, next) => {
   try {
+    console.log(req.body);
     const user = req.user;
 
     await user.updateOne({ $addToSet: { favorites: req.body.favorite } });
@@ -90,7 +103,9 @@ router.post("/removeFromFav", authorizeUser, async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     const user = await UserModel.findByCredentials(email, password);
+
     const { accessToken, refreshToken } = await authenticateUser(user);
 
     res.cookie("accessToken", accessToken, {
@@ -110,7 +125,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/logout", authorizeUser, async (req, res, next) => {
+router.get("/logout", authorizeUser, async (req, res, next) => {
   try {
     newRefreshTokens = req.user.refreshTokens.filter(
       (token) => token.refreshToken !== req.token.refreshToken
@@ -118,7 +133,7 @@ router.post("/logout", authorizeUser, async (req, res, next) => {
     await req.user.updateOne({ refreshTokens: newRefreshTokens });
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    res.redirect(`${process.env.FE_URL}`);
+    res.redirect(`${process.env.FE_URL}/`);
   } catch (error) {
     console.log(error);
     next(error);
@@ -189,7 +204,7 @@ router.get(
         path: "/users/refreshToken",
       });
 
-      res.status(200).redirect(`${process.env.FE_URL}/`);
+      res.status(200).redirect(`${process.env.FE_URL}/home`);
     } catch (error) {
       console.log(error);
       next(error);
