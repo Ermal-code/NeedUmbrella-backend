@@ -75,7 +75,6 @@ router.delete("/me", authorizeUser, async (req, res, next) => {
 
 router.post("/addToFav", authorizeUser, async (req, res, next) => {
   try {
-    console.log(req.body);
     const user = req.user;
 
     await user.updateOne({ $addToSet: { favorites: req.body.favorite } });
@@ -125,7 +124,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.get("/logout", authorizeUser, async (req, res, next) => {
+router.post("/logout", authorizeUser, async (req, res, next) => {
   try {
     newRefreshTokens = req.user.refreshTokens.filter(
       (token) => token.refreshToken !== req.token.refreshToken
@@ -133,7 +132,7 @@ router.get("/logout", authorizeUser, async (req, res, next) => {
     await req.user.updateOne({ refreshTokens: newRefreshTokens });
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
-    res.redirect(`${process.env.FE_URL}/`);
+    res.send("ok");
   } catch (error) {
     console.log(error);
     next(error);
