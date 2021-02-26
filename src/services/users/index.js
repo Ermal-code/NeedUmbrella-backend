@@ -61,6 +61,32 @@ router.delete("/me", authorizeUser, async (req, res, next) => {
   }
 });
 
+router.post("/addToFav", authorizeUser, async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    await user.updateOne({ $addToSet: { favorites: req.body.favorite } });
+
+    res.status(200).send(user);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.post("/removeFromFav", authorizeUser, async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    await user.updateOne({ $pull: { favorites: req.body.favorite } });
+
+    res.status(200).send(user);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
