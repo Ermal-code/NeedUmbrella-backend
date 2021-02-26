@@ -7,6 +7,7 @@ const passport = require("passport");
 const cookieParser = require("cookie-parser");
 
 const usersRoute = require("./services/users");
+const weatherApiRoute = require("./services/weatherApi");
 const oauth = require("./utils/auth/oAuth");
 
 const {
@@ -39,6 +40,7 @@ server.use(cookieParser());
 server.use(passport.initialize());
 
 server.use("/users", usersRoute);
+server.use("/weather", weatherApiRoute);
 
 server.use(badRequestErrorHandler);
 server.use(notFoundErrorHandler);

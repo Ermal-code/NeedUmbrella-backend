@@ -154,7 +154,16 @@ router.get(
   passport.authenticate("google"),
   async (req, res, next) => {
     try {
-      res.status(200).send("ok");
+      res.cookie("accessToken", req.user.tokens.accessToken, {
+        httpOnly: true,
+      });
+
+      res.cookie("refreshToken", req.user.tokens.refreshToken, {
+        httpOnly: true,
+        path: "/users/refreshToken",
+      });
+
+      res.status(200).redirect(`${process.env.FE_URL}/`);
     } catch (error) {
       console.log(error);
       next(error);
