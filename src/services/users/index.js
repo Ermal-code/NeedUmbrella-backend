@@ -52,7 +52,7 @@ router.post("/register", async (req, res, next) => {
 router.put("/me", authorizeUser, async (req, res, next) => {
   try {
     const updates = Object.keys(req.body);
-    updates.forEach((update) => req.user[update] === req.body[update]);
+    updates.forEach((update) => req.user[update] = req.body[update]);
     await req.user.save();
 
     res.status(200).send(req.user);
