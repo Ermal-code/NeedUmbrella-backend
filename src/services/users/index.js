@@ -104,22 +104,26 @@ router.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await UserModel.findByCredentials(email, password);
+    if (user) {
+      const { accessToken, refreshToken } = await authenticateUser(user);
 
-    const { accessToken, refreshToken } = await authenticateUser(user);
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        path: "/",
+      });
 
-    console.log({ user, accessToken, refreshToken });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        path: "/users/refreshToken",
+      });
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      path: "/",
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      path: "/users/refreshToken",
-    });
-
-    res.send("OK");
+      res.status(200).send(user);
+    } else {
+      const err = new Error();
+      err.message = `Email or password is wrong`;
+      err.httpStatusCode = 404;
+      next(err);
+    }
   } catch (error) {
     console.log(error);
     next(error);
