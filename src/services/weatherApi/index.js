@@ -20,6 +20,11 @@ router.get("/:city", authorizeUser, async (req, res, next) => {
       err.message = "City not found";
       err.httpStatusCode = 404;
       next(err);
+    } else if (error.response.data.message === "bad query") {
+      const err = new Error();
+      err.message = "Search for a city...";
+      err.httpStatusCode = 400;
+      next(err);
     } else {
       next(error);
     }
