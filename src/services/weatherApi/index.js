@@ -15,8 +15,14 @@ router.get("/:city", authorizeUser, async (req, res, next) => {
 
     res.status(200).send(data);
   } catch (error) {
-    console.log(error);
-    next(error);
+    if (error.response.data.message === "city not found") {
+      const err = new Error();
+      err.message = "City not found";
+      err.httpStatusCode = 404;
+      next(err);
+    } else {
+      next(error);
+    }
   }
 });
 

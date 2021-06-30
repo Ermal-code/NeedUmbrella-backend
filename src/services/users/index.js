@@ -52,7 +52,7 @@ router.post("/register", async (req, res, next) => {
 router.put("/me", authorizeUser, async (req, res, next) => {
   try {
     const updates = Object.keys(req.body);
-    updates.forEach((update) => req.user[update] = req.body[update]);
+    updates.forEach((update) => (req.user[update] = req.body[update]));
     await req.user.save();
 
     res.status(200).send(req.user);
@@ -106,6 +106,8 @@ router.post("/login", async (req, res, next) => {
     const user = await UserModel.findByCredentials(email, password);
 
     const { accessToken, refreshToken } = await authenticateUser(user);
+
+    console.log({ user, accessToken, refreshToken });
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -196,6 +198,7 @@ router.get(
     try {
       res.cookie("accessToken", req.user.tokens.accessToken, {
         httpOnly: true,
+        path: "/",
       });
 
       res.cookie("refreshToken", req.user.tokens.refreshToken, {
