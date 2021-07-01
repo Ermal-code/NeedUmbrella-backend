@@ -3,7 +3,7 @@
 ### Summary
 
 <p>Need An Umbrella is a weather app where you can search by city to see the weather. Also you can add cities to your favorite list so you can track them all the time without
-the need to search again for them. For weather data I used the free API from [openweathermap.org/api](https://openweathermap.org/api). </p>
+the need to search again for them. For weather data I used the free API from </p>[openweathermap.org/api](https://openweathermap.org/api). 
 <p>This repo is for the backend of the project which was done using NodeJs, expressJs and MongoDB. Also for image upload I used cloudinary with multer. </p>
 
 ### Users
@@ -285,4 +285,4 @@ router.post("/removeFromFav", authorizeUser, async (req, res, next) => {
 </details>
 
 <p>Please feel free to go through the code and for any thing you want to ask or suggest me you can find my contacts in my profile page in Github! Thank you!</p>
-<p>[HERE](https://need-umbrella.vercel.app/) you can find the live Demo of the app.
+[HERE](https://need-umbrella.vercel.app/) you can find the live Demo of the app.
