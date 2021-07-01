@@ -39,11 +39,15 @@ router.post("/register", async (req, res, next) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       path: "/",
+      secure: true,
+      sameSite: "none",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       path: "/users/refreshToken",
+      secure: true,
+      sameSite: "none",
     });
     res.status(201).send(_id);
   } catch (error) {
@@ -113,11 +117,15 @@ router.post("/login", async (req, res, next) => {
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         path: "/",
+        secure: true,
+        sameSite: "none",
       });
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         path: "/users/refreshToken",
+        secure: true,
+        sameSite: "none",
       });
 
       res.status(200).send(user);
@@ -176,11 +184,15 @@ router.post("/refreshToken", async (req, res, next) => {
       res.cookie("accessToken", tokens.accessToken, {
         httpOnly: true,
         path: "/",
+        secure: true,
+        sameSite: "none",
       });
 
       res.cookie("refreshToken", tokens.refreshToken, {
         httpOnly: true,
         path: "/users/refreshToken",
+        secure: true,
+        sameSite: "none",
       });
 
       res.send("OK");
@@ -206,11 +218,15 @@ router.get(
       res.cookie("accessToken", req.user.tokens.accessToken, {
         httpOnly: true,
         path: "/",
+        secure: true,
+        sameSite: "none",
       });
 
       res.cookie("refreshToken", req.user.tokens.refreshToken, {
         httpOnly: true,
         path: "/users/refreshToken",
+        secure: true,
+        sameSite: "none",
       });
 
       res.status(200).redirect(`${process.env.FE_URL}/home`);
@@ -221,7 +237,6 @@ router.get(
   }
 );
 
-
 const cloudStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -231,19 +246,24 @@ const cloudStorage = new CloudinaryStorage({
 
 const cloudMulter = multer({ storage: cloudStorage });
 
-router.post("/uploadPicture",authorizeUser,cloudMulter.single("picture"),async (req, res, next) => {
-  try {
-    const user=req.user
-     await user.updateOne( {
-      $set: {
-        img: req.file.path,
-      },
-    });
-    res.status(201).send(user)
-  } catch (error) {
-    console.log(error);
-    next(error)
+router.post(
+  "/uploadPicture",
+  authorizeUser,
+  cloudMulter.single("picture"),
+  async (req, res, next) => {
+    try {
+      const user = req.user;
+      await user.updateOne({
+        $set: {
+          img: req.file.path,
+        },
+      });
+      res.status(201).send(user);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
   }
-})
+);
 
 module.exports = router;
