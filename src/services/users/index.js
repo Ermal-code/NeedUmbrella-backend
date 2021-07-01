@@ -6,6 +6,9 @@ const {
   adminOnly,
 } = require("../../utils/auth/authMiddlewares");
 const passport = require("passport");
+const multer = require("multer");
+const cloudinary = require("../../utils/cloudinaryConfig");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 router.get("/", authorizeUser, adminOnly, async (req, res, next) => {
   try {
@@ -217,5 +220,30 @@ router.get(
     }
   }
 );
+
+
+const cloudStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "profile",
+  },
+});
+
+const cloudMulter = multer({ storage: cloudStorage });
+
+router.post("/uploadPicture",authorizeUser,cloudMulter.single("picture"),async (req, res, next) => {
+  try {
+    const user=req.user
+     await user.updateOne( {
+      $set: {
+        img: req.file.path,
+      },
+    });
+    res.status(201).send(user)
+  } catch (error) {
+    console.log(error);
+    next(error)
+  }
+})
 
 module.exports = router;
