@@ -291,5 +291,5 @@ router.post("/removeFromFav", authorizeUser, async (req, res, next) => {
 
 [HERE](https://need-umbrella.vercel.app/) you can find the live Demo of the app.
 
-[HERE](https://github.com/Ermal-code/NeedUmbrella-frontend) you can find the front end repository.
+[HERE](https://github.com/Ermal-code/NeedUmbrella-frontend) you can find the frontend repository.
 
