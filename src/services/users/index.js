@@ -1,10 +1,7 @@
 const router = require("express").Router();
 const UserModel = require("./schema");
 const { authenticateUser, refreshToken } = require("../../utils/auth");
-const {
-  authorizeUser,
-  adminOnly,
-} = require("../../utils/auth/authMiddlewares");
+const { authorizeUser, adminOnly } = require("../../utils/auth/authMiddlewares");
 const passport = require("passport");
 const multer = require("multer");
 const cloudinary = require("../../utils/cloudinaryConfig");
@@ -210,32 +207,28 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-router.get(
-  "/googleRedirect",
-  passport.authenticate("google"),
-  async (req, res, next) => {
-    try {
-      res.cookie("accessToken", req.user.tokens.accessToken, {
-        httpOnly: true,
-        path: "/",
-        secure: true,
-        sameSite: "none",
-      });
+router.get("/googleRedirect", passport.authenticate("google"), async (req, res, next) => {
+  try {
+    res.cookie("accessToken", req.user.tokens.accessToken, {
+      httpOnly: true,
+      path: "/",
+      secure: true,
+      sameSite: "none",
+    });
 
-      res.cookie("refreshToken", req.user.tokens.refreshToken, {
-        httpOnly: true,
-        path: "/users/refreshToken",
-        secure: true,
-        sameSite: "none",
-      });
+    res.cookie("refreshToken", req.user.tokens.refreshToken, {
+      httpOnly: true,
+      path: "/users/refreshToken",
+      secure: true,
+      sameSite: "none",
+    });
 
-      res.status(200).redirect(`${process.env.FE_URL}/home`);
-    } catch (error) {
-      console.log(error);
-      next(error);
-    }
+    res.status(200).redirect(`${process.env.FE_URL}/home`);
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
-);
+});
 
 const cloudStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -265,5 +258,7 @@ router.post(
     }
   }
 );
+
+//okay let's test this
 
 module.exports = router;
