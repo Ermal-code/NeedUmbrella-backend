@@ -5,6 +5,8 @@ const mongoose = require("mongoose")
 const helmet = require("helmet")
 const passport = require("passport")
 const cookieParser = require("cookie-parser")
+const session = require("express-session")
+const SQLiteStore = require("connect-sqlite3")(session)
 
 const usersRoute = require("./services/users")
 const weatherApiRoute = require("./services/weatherApi")
@@ -20,8 +22,18 @@ const {
 
 const server = express()
 
-server.set("trust proxy", 1)
-server.enable("trust proxy")
+const sess = {
+    secret: "keyboard cat",
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false, // don't create session until something stored
+    store: new SQLiteStore(),
+}
+
+if (server.get("env") === "production") {
+    server.set("trust proxy", 1) // trust first proxy
+    server.enable("trust proxy")
+    sess.cookie.secure = true // serve secure cookies
+}
 
 const port = process.env.PORT || 3003
 
@@ -40,6 +52,8 @@ server.use(cors(corsOptions))
 server.use(helmet())
 server.use(express.json())
 server.use(cookieParser())
+server.use(session(sess))
+server.use(passport.authenticate("session"))
 server.use(passport.initialize())
 
 server.use("/users", usersRoute)
