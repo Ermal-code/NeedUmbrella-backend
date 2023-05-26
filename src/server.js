@@ -69,7 +69,7 @@ server.use(catchAllErrorHandler)
 
 console.log(listEndpoints(server))
 
-mongoose.set("debug", true)
+if (process.env.DEBUG_FLAG === "true") mongoose.set("debug", true)
 
 mongoose
     .connect(process.env.MONGO_CONNECTION, {
